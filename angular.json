@@ -29,7 +29,9 @@
             "styles": [
               "src/styles.css"
             ],
-            "scripts": []
+            "scripts": [
+              "node_modules/@ffmpeg/ffmpeg/dist/ffmpeg.min.js"
+            ]
           },
           "configurations": {
             "production": {
@@ -81,6 +83,12 @@
         },
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
+          "options": {
+            "headers": {
+              "Cross-Origin-Embedder-Policy": "require-corp",
+              "Cross-Origin-Opener-Policy": "same-origin"
+            }
+          },
           "configurations": {
             "production": {
               "buildTarget": "task-pulse:build:production"

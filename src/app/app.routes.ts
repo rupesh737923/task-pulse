@@ -13,6 +13,11 @@ export const routes: Routes = [
         loadComponent: () => import('./pages/convert/document-convertor.component').then(m => m.DocumentConvertorComponent),
         canActivate: [authGuard]
     },
+    {
+        path: 'video-convert',
+        loadComponent: () => import('./pages/convert/video-convertor.component').then(m => m.VideoConvertorComponent),
+        canActivate: [authGuard]
+    },
     // Use lazy loading for multiple related screens/routes
     {
         path: 'task',

@@ -30,7 +30,7 @@ interface ConvertTool {
   standalone: true,
   imports: [CommonModule],
   templateUrl: './document-convertor.component.html',
-  styleUrls: ['./document-convertor.component.css']
+  styleUrls: ['./convertor-base.css', './document-convertor.component.css']
 })
 export class DocumentConvertorComponent implements OnDestroy {
   tools: ConvertTool[] = [
