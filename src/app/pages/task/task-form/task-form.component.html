@@ -5,7 +5,13 @@
       <p>{{ isEditMode ? 'Update your task details below' : 'Fill in the details to create a new task' }}</p>
     </div>
 
-    <form [formGroup]="taskForm" (ngSubmit)="onSubmit()" class="task-form">
+    <!-- Loading State -->
+    <div class="form-loading" *ngIf="isFetching" style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 6rem 0;">
+      <div class="spinner"></div>
+      <p style="margin-top: 1rem; color: #6c757d; font-size: 0.95rem; font-weight: 500;">Loading task details...</p>
+    </div>
+
+    <form [formGroup]="taskForm" (ngSubmit)="onSubmit()" class="task-form" *ngIf="!isFetching">
       
       <!-- Title -->
       <div class="form-group custom-input-wrapper">

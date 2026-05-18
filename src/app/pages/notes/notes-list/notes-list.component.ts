@@ -42,6 +42,7 @@ export class NotesListComponent implements OnInit {
   keyword = '';
   category = '';
   sortOption = 'createdAt_desc';
+  loading = false;
 
   selectedCategories: string[] = [];
   categories: string[] = ['All', 'Work', 'Personal', 'School', 'Health', 'Finance', 'Ideas', 'Job Search', 'Other'];
@@ -81,13 +82,18 @@ export class NotesListComponent implements OnInit {
   }
 
   loadNotes(): void {
+    this.loading = true;
     const [sortBy, sortOrder] = this.sortOption.split('_');
     this.notesService.getNotes(this.currentPage, this.pageSize, this.category, this.keyword, sortBy, sortOrder).subscribe({
       next: (response) => {
         this.notes = response.items;
         this.totalNotes = response.total;
+        this.loading = false;
       },
-      error: (err) => console.error('Error loading notes', err)
+      error: (err) => {
+        console.error('Error loading notes', err);
+        this.loading = false;
+      }
     });
   }
 

@@ -33,6 +33,7 @@ export class NoteFormComponent implements OnInit {
   noteForm!: FormGroup;
   isEditMode = false;
   noteId?: number;
+  isLoading = false;
   
   categories: string[] = ['Work', 'Personal', 'School', 'Health', 'Finance', 'Ideas', 'Job Search', 'Other'];
 
@@ -63,6 +64,7 @@ export class NoteFormComponent implements OnInit {
   }
 
   loadNote(id: number): void {
+    this.isLoading = true;
     this.notesService.getNote(id).subscribe({
       next: (note) => {
         this.noteForm.patchValue({
@@ -70,10 +72,12 @@ export class NoteFormComponent implements OnInit {
           content: note.content,
           category: note.category || ''
         });
+        this.isLoading = false;
       },
       error: (err) => {
         console.error('Error loading note', err);
         this.snackBar.open('Error loading note', 'Close', { duration: 3000 });
+        this.isLoading = false;
         this.router.navigate(['/notes']);
       }
     });

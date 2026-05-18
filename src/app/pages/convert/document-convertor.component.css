@@ -442,6 +442,21 @@
     margin-bottom: 2.5rem;
   }
 
+  .convert-card {
+    padding: 1.5rem;
+    gap: 1rem;
+  }
+
+  .card-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 1.25rem;
+  }
+
+  .card-icon .material-icons {
+    font-size: 30px;
+  }
+
   .upload-modal {
     padding: 2rem 1.5rem;
     border-radius: 2rem;
