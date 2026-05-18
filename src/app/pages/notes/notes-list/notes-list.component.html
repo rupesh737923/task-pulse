@@ -21,7 +21,7 @@
     <div class="v2-action-group notes-action-group">
       <mat-form-field appearance="outline" class="v2-category-select sort-select">
         <mat-label>Sort By</mat-label>
-        <mat-select [(ngModel)]="sortOption" (selectionChange)="search()">
+        <mat-select [(ngModel)]="sortOption" (selectionChange)="onSortChange()">
           <mat-option value="createdAt_desc">Newest First</mat-option>
           <mat-option value="createdAt_asc">Oldest First</mat-option>
           <mat-option value="updatedAt_desc">Recently Updated</mat-option>
@@ -32,8 +32,7 @@
 
       <mat-form-field appearance="outline" class="v2-category-select category-select">
         <mat-label>Category</mat-label>
-        <mat-select [(ngModel)]="category" (selectionChange)="search()">
-          <mat-option value="">All</mat-option>
+        <mat-select [(ngModel)]="selectedCategories" (selectionChange)="onCategoryChange()" multiple>
           <mat-option *ngFor="let cat of categories" [value]="cat">{{ cat }}</mat-option>
         </mat-select>
       </mat-form-field>

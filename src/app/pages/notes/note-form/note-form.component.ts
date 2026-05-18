@@ -34,7 +34,7 @@ export class NoteFormComponent implements OnInit {
   isEditMode = false;
   noteId?: number;
   
-  categories: string[] = ['Work', 'Personal', 'School', 'Health', 'Finance', 'Ideas', 'Other'];
+  categories: string[] = ['Work', 'Personal', 'School', 'Health', 'Finance', 'Ideas', 'Job Search', 'Other'];
 
   constructor(
     private fb: FormBuilder,
