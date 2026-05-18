@@ -4,6 +4,8 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatButtonModule } from '@angular/material/button';
+import { MatSelectModule } from '@angular/material/select';
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { TaskService } from '../../../core/services/task.service';
 import { Task, TaskStatus, TaskPriority } from '../../../core/models/task.model';
 import { ButtonComponent } from '../../../shared/components/button/button.component';
@@ -16,7 +18,17 @@ import autoTable from 'jspdf-autotable';
 @Component({
   selector: 'app-task-list',
   standalone: true,
-  imports: [CommonModule, FormsModule, MatMenuModule, MatButtonModule, ButtonComponent, DueDateBadgeComponent, ModalComponent],
+  imports: [
+    CommonModule, 
+    FormsModule, 
+    MatMenuModule, 
+    MatButtonModule, 
+    MatSelectModule, 
+    MatFormFieldModule, 
+    ButtonComponent, 
+    DueDateBadgeComponent, 
+    ModalComponent
+  ],
   templateUrl: './task-list.component.html',
   styleUrl: './task-list.component.css'
 })
@@ -27,6 +39,8 @@ export class TaskListComponent implements OnInit, AfterViewInit {
   searchQuery: string = '';
   selectedStatuses: string[] = []; // Changed to array for multi-select
   selectedPriorities: string[] = []; // Changed to array for multi-select
+  selectedCategories: string[] = [];
+  categories: string[] = ['Work', 'Personal', 'School', 'Health', 'Finance', 'Ideas', 'Job Search', 'Other'];
   selectedDay: string = 'today'; // Default to today for Daily Planner feel
   filterFromDate: string = '';
   filterToDate: string = '';
@@ -85,6 +99,7 @@ export class TaskListComponent implements OnInit, AfterViewInit {
       searchQuery: this.searchQuery,
       selectedStatuses: this.selectedStatuses,
       selectedPriorities: this.selectedPriorities,
+      selectedCategories: this.selectedCategories,
       selectedDay: this.selectedDay,
       filterFromDate: this.filterFromDate,
       filterToDate: this.filterToDate
@@ -100,6 +115,7 @@ export class TaskListComponent implements OnInit, AfterViewInit {
         this.searchQuery = state.searchQuery || '';
         this.selectedStatuses = state.selectedStatuses || [];
         this.selectedPriorities = state.selectedPriorities || [];
+        this.selectedCategories = state.selectedCategories || [];
         this.selectedDay = state.selectedDay || 'today';
         this.filterFromDate = state.filterFromDate || '';
         this.filterToDate = state.filterToDate || '';
@@ -237,13 +253,28 @@ export class TaskListComponent implements OnInit, AfterViewInit {
     this.saveFilters();
   }
 
+  onCategoryChange(): void {
+    this.saveFilters();
+  }
+
   clearFilters(): void {
     this.searchQuery = '';
     this.selectedStatuses = [];
     this.selectedPriorities = [];
+    this.selectedCategories = [];
     this.filterFromDate = '';
     this.filterToDate = '';
     this.selectedDay = 'all';
+    this.saveFilters();
+  }
+
+  toggleCategoryFilter(category: string): void {
+    const index = this.selectedCategories.indexOf(category);
+    if (index === -1) {
+      this.selectedCategories = [...this.selectedCategories, category];
+    } else {
+      this.selectedCategories = this.selectedCategories.filter(c => c !== category);
+    }
     this.saveFilters();
   }
 
@@ -532,6 +563,7 @@ export class TaskListComponent implements OnInit, AfterViewInit {
     if (this.searchQuery) count++;
     if (this.selectedStatuses.length > 0) count++;
     if (this.selectedPriorities.length > 0) count++;
+    if (this.selectedCategories.length > 0) count++;
     if (this.selectedDay !== 'all') count++;
     if (this.filterFromDate || this.filterToDate) count++;
     return count;
@@ -545,6 +577,8 @@ export class TaskListComponent implements OnInit, AfterViewInit {
       
       const matchesStatus = this.selectedStatuses.length === 0 || this.selectedStatuses.includes(task.status);
       const matchesPriority = this.selectedPriorities.length === 0 || this.selectedPriorities.includes(task.priority);
+      const matchesCategory = this.selectedCategories.length === 0 || 
+        (task.category && this.selectedCategories.includes(task.category));
       
       let matchesDate = true;
       if (this.filterFromDate || this.filterToDate) {
@@ -568,7 +602,7 @@ export class TaskListComponent implements OnInit, AfterViewInit {
         }
       }
       
-      return matchesSearch && matchesStatus && matchesPriority && matchesDate;
+      return matchesSearch && matchesStatus && matchesPriority && matchesCategory && matchesDate;
     });
   }
 

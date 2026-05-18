@@ -26,6 +26,13 @@
       <span class="v2-filter-count" *ngIf="activeFiltersCount > 0">{{ activeFiltersCount }}</span>
       <span class="v2-filter-open-indicator" *ngIf="showFilters"></span>
     </button>
+
+    <mat-form-field appearance="outline" class="v2-category-select category-select hide-mobile" style="margin-bottom: -1.25em; max-width: 180px;">
+      <mat-label>Category</mat-label>
+      <mat-select [(ngModel)]="selectedCategories" (selectionChange)="onCategoryChange()" multiple placeholder="All Categories">
+        <mat-option *ngFor="let cat of categories" [value]="cat">{{ cat }}</mat-option>
+      </mat-select>
+    </mat-form-field>
     
     <div class="v2-action-group">
       <button class="v2-action-btn" (click)="exportToPDF()" title="Export to PDF">
@@ -82,6 +89,15 @@
          </div>
        </div>
 
+        <div class="v2-filter-row" style="margin-top: 1.5rem; width: 100%;">
+          <div class="v2-filter-group" style="width: 100%;">
+            <label>Category</label>
+            <div class="v2-chips" style="flex-wrap: wrap; gap: 0.5rem; display: flex;">
+               <span class="v2-chip" *ngFor="let cat of categories" [class.active]="selectedCategories.includes(cat)" (click)="toggleCategoryFilter(cat)">{{ cat }}</span>
+            </div>
+          </div>
+        </div>
+
        <div class="v2-filter-row" style="margin-top: 1.5rem;">
          <div class="v2-filter-group">
            <label>Custom Date Range</label>
@@ -96,86 +112,49 @@
      </div>
   </ng-template>
 
-  <!-- Overdue Section (Vertical) -->
-  <div class="v2-section" *ngIf="overdueTasks.length > 0 && isDashboardView">
-    <div class="v2-section-header">
-      <h3>Overdue Tasks</h3>
-      <div class="v2-progress-track">
-        <div class="v2-progress-fill" 
-          [style.width.%]="overdueSeverityWidth"
-          [class.severity-low]="overdueTasks.length > 0 && overdueTasks.length <= 2"
-          [class.severity-med]="overdueTasks.length > 2 && overdueTasks.length < 5"
-          [class.severity-high]="overdueTasks.length >= 5"
-          [class.pulse-warning]="overdueTasks.length >= 5">
-        </div>
-      </div>
-    </div>
-    <div class="v2-list">
-      <div class="v2-item overdue" *ngFor="let task of overdueTasks">
-        <div class="v2-item-icon" (click)="onMarkCompleteClick($event, task)">
-          <span *ngIf="task.status === 'IN_PROGRESS'" class="v2-pulse"></span>
-          <span *ngIf="task.status === 'TODO'" class="material-icons">radio_button_unchecked</span>
-          <span *ngIf="task.status === 'COMPLETED'" class="material-icons" style="color: #10b981;">check_circle</span>
-        </div>
-        <div class="v2-item-content" (click)="viewDescription(task)">
-          <h4 class="v2-item-title">{{ task.title }}</h4>
-          <p class="v2-item-subtitle">
-            <span class="v2-overdue-label">Overdue {{ task.dueDate | date:'MMM d' }}</span> • 
-            {{ formatStatus(task.status) | titlecase }} • 
-            {{ task.priority | titlecase }}
-          </p>
-        </div>
-        <div class="v2-item-hover-actions" (click)="onEditTask(task.id)">
-           <span class="material-icons hover-edit-icon">edit</span>
-        </div>
-        <div class="v2-item-actions">
-           <button mat-icon-button [matMenuTriggerFor]="menu" [matMenuTriggerData]="{ task: task }" (click)="$event.stopPropagation()">
-             <span class="material-icons">more_vert</span>
-           </button>
-        </div>
-      </div>
-    </div>
+  <!-- Loading State -->
+  <div class="loading-state" *ngIf="isLoading" style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 6rem 0;">
+    <div class="spinner"></div>
+    <p style="margin-top: 1rem; color: var(--content-text-muted); font-size: 0.95rem; font-weight: 500;">Loading your tasks...</p>
   </div>
 
-  <!-- Today's Schedule -->
-  <div class="v2-section" *ngIf="isDashboardView && tasks.length > 0">
-    <div class="v2-section-header">
-      <h3>Today's Schedule</h3>
-      <button class="v2-add-btn" (click)="router.navigate(['/task/add'])">
-        <span class="material-icons">add</span>
-        <span>Add Task</span>
-      </button>
-    </div>
-
-    <!-- Group: Personal (Default) -->
-    <div class="v2-group">
-      <div class="v2-group-header">
-        <label>PERSONAL ({{ todayTasks.length }} tasks)</label>
-        <div class="v2-progress-track small">
-           <div class="v2-progress-fill blue" [style.width.%]="todayProgress"></div>
+  <div *ngIf="!isLoading">
+    <!-- Overdue Section (Vertical) -->
+    <div class="v2-section" *ngIf="overdueTasks.length > 0 && isDashboardView">
+      <div class="v2-section-header">
+        <h3>Overdue Tasks</h3>
+        <div class="v2-progress-track">
+          <div class="v2-progress-fill" 
+            [style.width.%]="overdueSeverityWidth"
+            [class.severity-low]="overdueTasks.length > 0 && overdueTasks.length <= 2"
+            [class.severity-med]="overdueTasks.length > 2 && overdueTasks.length < 5"
+            [class.severity-high]="overdueTasks.length >= 5"
+            [class.pulse-warning]="overdueTasks.length >= 5">
+          </div>
         </div>
-        <span class="v2-progress-text">{{ todayProgress }}%</span>
       </div>
-
       <div class="v2-list">
-        <div class="v2-item" *ngFor="let task of todayTasks">
+        <div class="v2-item overdue" *ngFor="let task of overdueTasks">
           <div class="v2-item-icon" (click)="onMarkCompleteClick($event, task)">
             <span *ngIf="task.status === 'IN_PROGRESS'" class="v2-pulse"></span>
             <span *ngIf="task.status === 'TODO'" class="material-icons">radio_button_unchecked</span>
             <span *ngIf="task.status === 'COMPLETED'" class="material-icons" style="color: #10b981;">check_circle</span>
           </div>
           <div class="v2-item-content" (click)="viewDescription(task)">
-            <h4 class="v2-item-title" [class.completed]="task.status === 'COMPLETED'">{{ task.title }}</h4>
+            <h4 class="v2-item-title">{{ task.title }}</h4>
             <p class="v2-item-subtitle">
+              <span class="v2-overdue-label">Overdue {{ task.dueDate | date:'MMM d' }}</span> • 
               {{ formatStatus(task.status) | titlecase }} • 
-              {{ task.dueDate | date:'MMM d' }} • 
               {{ task.priority | titlecase }}
             </p>
           </div>
+          <div class="v2-item-meta-right hide-mobile" *ngIf="task.category">
+             <span class="v2-tag list-tag" [ngClass]="task.category.toLowerCase()">
+               {{ task.category }}
+             </span>
+          </div>
           <div class="v2-item-hover-actions" (click)="onEditTask(task.id)">
              <span class="material-icons hover-edit-icon">edit</span>
-          </div>
-          <div class="v2-item-meta-right">
           </div>
           <div class="v2-item-actions">
              <button mat-icon-button [matMenuTriggerFor]="menu" [matMenuTriggerData]="{ task: task }" (click)="$event.stopPropagation()">
@@ -185,20 +164,30 @@
         </div>
       </div>
     </div>
-  </div>
 
-  <!-- Filtered Results (Search or Filters active) -->
-  <div class="v2-section" *ngIf="!isDashboardView">
-     <div class="v2-section-header">
-       <h3>Filtered Results</h3>
-       <button class="v2-add-btn" (click)="router.navigate(['/task/add'])">
-         <span class="material-icons">add</span>
-         <span>Add Task</span>
-       </button>
-     </div>
-     <div class="v2-list">
-        <div class="v2-item" *ngFor="let task of filteredTasks">
-           <div class="v2-item-icon" (click)="onMarkCompleteClick($event, task)">
+    <!-- Today's Schedule -->
+    <div class="v2-section" *ngIf="isDashboardView && tasks.length > 0">
+      <div class="v2-section-header">
+        <h3>Today's Schedule</h3>
+        <button class="v2-add-btn" (click)="router.navigate(['/task/add'])">
+          <span class="material-icons">add</span>
+          <span>Add Task</span>
+        </button>
+      </div>
+
+      <!-- Group: Personal (Default) -->
+      <div class="v2-group">
+        <div class="v2-group-header">
+          <label>PERSONAL ({{ todayTasks.length }} tasks)</label>
+          <div class="v2-progress-track small">
+             <div class="v2-progress-fill blue" [style.width.%]="todayProgress"></div>
+          </div>
+          <span class="v2-progress-text">{{ todayProgress }}%</span>
+        </div>
+
+        <div class="v2-list">
+          <div class="v2-item" *ngFor="let task of todayTasks">
+            <div class="v2-item-icon" (click)="onMarkCompleteClick($event, task)">
               <span *ngIf="task.status === 'IN_PROGRESS'" class="v2-pulse"></span>
               <span *ngIf="task.status === 'TODO'" class="material-icons">radio_button_unchecked</span>
               <span *ngIf="task.status === 'COMPLETED'" class="material-icons" style="color: #10b981;">check_circle</span>
@@ -211,6 +200,11 @@
                 {{ task.priority | titlecase }}
               </p>
             </div>
+            <div class="v2-item-meta-right hide-mobile" *ngIf="task.category">
+               <span class="v2-tag list-tag" [ngClass]="task.category.toLowerCase()">
+                 {{ task.category }}
+               </span>
+            </div>
             <div class="v2-item-hover-actions" (click)="onEditTask(task.id)">
                <span class="material-icons hover-edit-icon">edit</span>
             </div>
@@ -219,21 +213,70 @@
                  <span class="material-icons">more_vert</span>
                </button>
             </div>
+          </div>
         </div>
-     </div>
-  </div>
+      </div>
+    </div>
 
-  <!-- Global Empty State -->
-  <div *ngIf="tasks.length === 0" class="v2-global-empty-state">
-     <div class="v2-empty-illustration">
-       <span class="material-icons">task_alt</span>
-     </div>
-     <h3>No tasks!</h3>
-     <p>Your schedule is clear. Ready to plan your first task?</p>
-     <button class="v2-btn-create-first" (click)="onAddTask()">
-       <span class="material-icons">add</span>
-       Create Your First Task
-     </button>
+    <!-- Filtered Results (Search or Filters active) -->
+    <div class="v2-section" *ngIf="!isDashboardView">
+       <div class="v2-section-header">
+         <h3>Filtered Results</h3>
+         <button class="v2-add-btn" (click)="router.navigate(['/task/add'])">
+           <span class="material-icons">add</span>
+           <span>Add Task</span>
+         </button>
+       </div>
+       <div class="v2-list" *ngIf="filteredTasks.length > 0; else noFilteredTasks">
+          <div class="v2-item" *ngFor="let task of filteredTasks">
+             <div class="v2-item-icon" (click)="onMarkCompleteClick($event, task)">
+                <span *ngIf="task.status === 'IN_PROGRESS'" class="v2-pulse"></span>
+                <span *ngIf="task.status === 'TODO'" class="material-icons">radio_button_unchecked</span>
+                <span *ngIf="task.status === 'COMPLETED'" class="material-icons" style="color: #10b981;">check_circle</span>
+              </div>
+              <div class="v2-item-content" (click)="viewDescription(task)">
+                <h4 class="v2-item-title" [class.completed]="task.status === 'COMPLETED'">{{ task.title }}</h4>
+                <p class="v2-item-subtitle">
+                  {{ formatStatus(task.status) | titlecase }} • 
+                  {{ task.dueDate | date:'MMM d' }} • 
+                  {{ task.priority | titlecase }}
+                </p>
+              </div>
+              <div class="v2-item-meta-right hide-mobile" *ngIf="task.category">
+                 <span class="v2-tag list-tag" [ngClass]="task.category.toLowerCase()">
+                   {{ task.category }}
+                 </span>
+              </div>
+              <div class="v2-item-hover-actions" (click)="onEditTask(task.id)">
+                 <span class="material-icons hover-edit-icon">edit</span>
+              </div>
+              <div class="v2-item-actions">
+                 <button mat-icon-button [matMenuTriggerFor]="menu" [matMenuTriggerData]="{ task: task }" (click)="$event.stopPropagation()">
+                   <span class="material-icons">more_vert</span>
+                 </button>
+              </div>
+          </div>
+       </div>
+       <ng-template #noFilteredTasks>
+         <div class="v2-empty-results" style="text-align: center; padding: 3rem 0; color: var(--content-text-muted);">
+           <span class="material-icons" style="font-size: 48px; color: #9ca3af; margin-bottom: 1rem;">search_off</span>
+           <p>No tasks match your filter criteria.</p>
+         </div>
+       </ng-template>
+    </div>
+
+    <!-- Global Empty State -->
+    <div *ngIf="tasks.length === 0" class="v2-global-empty-state">
+       <div class="v2-empty-illustration">
+         <span class="material-icons">task_alt</span>
+       </div>
+       <h3>No tasks!</h3>
+       <p>Your schedule is clear. Ready to plan your first task?</p>
+       <button class="v2-btn-create-first" (click)="onAddTask()">
+         <span class="material-icons">add</span>
+         Create Your First Task
+       </button>
+    </div>
   </div>
 
   <!-- Shared Context Menu -->
@@ -257,12 +300,15 @@
     [title]="selectedTaskForDescription?.title || 'Task Details'"
     [showCloseBtn]="true">
     <div class="task-detail-modal-content">
-      <div class="detail-badges" style="display: flex; gap: 0.8rem; margin: 1.5rem 0;">
+      <div class="detail-badges" style="display: flex; gap: 0.8rem; margin: 1.5rem 0; align-items: center; flex-wrap: wrap;">
         <span *ngIf="selectedTaskForDescription" class="badge priority-badge" [ngClass]="getPriorityClass(selectedTaskForDescription.priority)">
           {{ selectedTaskForDescription.priority | titlecase }}
         </span>
         <span *ngIf="selectedTaskForDescription" class="badge status-badge" [ngClass]="getStatusClass(selectedTaskForDescription.status)">
           {{ formatStatus(selectedTaskForDescription.status) | titlecase }}
+        </span>
+        <span *ngIf="selectedTaskForDescription?.category" class="v2-tag list-tag" [ngClass]="selectedTaskForDescription!.category!.toLowerCase()" style="font-size: 0.75rem; padding: 0.25rem 0.75rem; border-radius: 12px; font-weight: 600; display: inline-flex; align-items: center;">
+          {{ selectedTaskForDescription?.category }}
         </span>
       </div>
 

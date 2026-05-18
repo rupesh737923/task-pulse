@@ -975,3 +975,39 @@ body.dark-theme .btn-cancel:hover {
   background: rgba(255, 255, 255, 0.1) !important;
   color: #ffffff !important;
 }
+
+/* ── Material Select in v2-toolbar (consistent light/dark theme matching search & filters) ── */
+.v2-toolbar .v2-category-select .mat-mdc-text-field-wrapper {
+  background-color: #ffffff !important;
+  border-radius: 10px !important;
+}
+
+.v2-toolbar .v2-category-select .mdc-notched-outline__leading,
+.v2-toolbar .v2-category-select .mdc-notched-outline__notch,
+.v2-toolbar .v2-category-select .mdc-notched-outline__trailing {
+  border-color: #e5e7eb !important;
+}
+
+.v2-toolbar .v2-category-select.mat-focused .mdc-notched-outline__leading,
+.v2-toolbar .v2-category-select.mat-focused .mdc-notched-outline__notch,
+.v2-toolbar .v2-category-select.mat-focused .mdc-notched-outline__trailing {
+  border-color: #6366f1 !important;
+}
+
+/* Dark Theme Overrides for Material Select in v2-toolbar */
+body.dark-theme .v2-toolbar .v2-category-select .mat-mdc-text-field-wrapper {
+  background-color: #1c1c1c !important;
+}
+
+body.dark-theme .v2-toolbar .v2-category-select .mdc-notched-outline__leading,
+body.dark-theme .v2-toolbar .v2-category-select .mdc-notched-outline__notch,
+body.dark-theme .v2-toolbar .v2-category-select .mdc-notched-outline__trailing {
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+body.dark-theme .v2-toolbar .v2-category-select.mat-focused .mdc-notched-outline__leading,
+body.dark-theme .v2-toolbar .v2-category-select.mat-focused .mdc-notched-outline__notch,
+body.dark-theme .v2-toolbar .v2-category-select.mat-focused .mdc-notched-outline__trailing {
+  border-color: #818cf8 !important;
+}
+

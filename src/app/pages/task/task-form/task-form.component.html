@@ -89,6 +89,19 @@
         </div>
       </div>
 
+      <!-- Category (Dropdown) -->
+      <div class="form-group select-wrapper" style="margin-top: 1.5rem;">
+        <label for="category">Category</label>
+        <mat-form-field appearance="outline" class="custom-mat-form-field" style="width: 100%;">
+          <mat-select formControlName="category" placeholder="Select Category" id="category">
+            <mat-option value="">None</mat-option>
+            <mat-option *ngFor="let cat of categories" [value]="cat">
+              {{ cat }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
       <div *ngIf="errorMessage" class="error-message">
         {{errorMessage}}
       </div>

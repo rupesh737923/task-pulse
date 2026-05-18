@@ -424,6 +424,13 @@
 }
 
 .v2-tag.list-tag { background: #f3f4f6; color: #6b7280; }
+.v2-tag.list-tag.work { background-color: #e0e7ff; color: #4338ca; }
+.v2-tag.list-tag.personal { background-color: #fce7f3; color: #be185d; }
+.v2-tag.list-tag.school { background-color: #fef3c7; color: #b45309; }
+.v2-tag.list-tag.health { background-color: #dcfce7; color: #15803d; }
+.v2-tag.list-tag.finance { background-color: #fae8ff; color: #a21caf; }
+.v2-tag.list-tag.ideas { background-color: #cffafe; color: #0f766e; }
+.v2-tag.list-tag.other { background-color: #f1f5f9; color: #475569; }
 
 .priority-tag.high, .v2-priority-tag.high { background: rgba(239,68,68,0.08); color: #ef4444; }
 .priority-tag.medium, .v2-priority-tag.medium { background: rgba(245,158,11,0.08); color: #d97706; }
@@ -672,6 +679,13 @@ body.dark-theme .v2-overdue-label { color: #f87171; }
 body.dark-theme .v2-status-text { color: #6b7280; }
 
 body.dark-theme .v2-tag.list-tag { background: rgba(255,255,255,0.05); color: #9ca3af; }
+body.dark-theme .v2-tag.list-tag.work { background-color: rgba(67, 56, 202, 0.3) !important; color: #a5b4fc !important; }
+body.dark-theme .v2-tag.list-tag.personal { background-color: rgba(190, 24, 93, 0.3) !important; color: #f9a8d4 !important; }
+body.dark-theme .v2-tag.list-tag.school { background-color: rgba(180, 83, 9, 0.3) !important; color: #fcd34d !important; }
+body.dark-theme .v2-tag.list-tag.health { background-color: rgba(21, 128, 61, 0.3) !important; color: #86efac !important; }
+body.dark-theme .v2-tag.list-tag.finance { background-color: rgba(162, 28, 175, 0.3) !important; color: #f0abfc !important; }
+body.dark-theme .v2-tag.list-tag.ideas { background-color: rgba(15, 118, 110, 0.3) !important; color: #5eead4 !important; }
+body.dark-theme .v2-tag.list-tag.other { background-color: rgba(255,255,255,0.1) !important; color: #e2e8f0 !important; }
 body.dark-theme .priority-tag.high { background: rgba(239,68,68,0.12); color: #f87171; }
 body.dark-theme .priority-tag.medium { background: rgba(245,158,11,0.12); color: #fbbf24; }
 body.dark-theme .priority-tag.low { background: rgba(59,130,246,0.12); color: #60a5fa; }
@@ -687,3 +701,9 @@ body.dark-theme .v2-empty-results { background: #161616; border-color: rgba(255,
 body.dark-theme .v2-confirm-modal p { color: #d1d5db; }
 body.dark-theme .v2-btn-secondary { background: rgba(255,255,255,0.05); color: #6b7280; border-color: rgba(255,255,255,0.08); }
 body.dark-theme .v2-btn-secondary:hover { background: rgba(255,255,255,0.08); }
+
+/* Category Dropdown Overrides */
+.category-select {
+  margin-bottom: -1.25em; /* Alignment correction for Material Form Field in toolbar */
+}
+

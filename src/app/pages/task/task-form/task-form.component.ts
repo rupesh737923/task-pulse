@@ -10,6 +10,9 @@ import { Task, TaskPriority, TaskStatus } from '../../../core/models/task.model'
 
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule, MAT_DATE_FORMATS, MAT_DATE_LOCALE, NativeDateAdapter, DateAdapter } from '@angular/material/core';
+import { MatSelectModule } from '@angular/material/select';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 
 export class CustomDateAdapter extends NativeDateAdapter {
   override format(date: Date, displayFormat: Object): string {
@@ -46,7 +49,10 @@ export const MY_DATE_FORMATS = {
     InputComponent, 
     DueDateBadgeComponent,
     MatDatepickerModule,
-    MatNativeDateModule
+    MatNativeDateModule,
+    MatSelectModule,
+    MatFormFieldModule,
+    MatInputModule
   ],
   providers: [
     { provide: DateAdapter, useClass: CustomDateAdapter, deps: [MAT_DATE_LOCALE] },
@@ -64,6 +70,8 @@ export class TaskFormComponent implements OnInit {
   isFetching = false;
   errorMessage = '';
   minDate = new Date();
+  
+  categories: string[] = ['Work', 'Personal', 'School', 'Health', 'Finance', 'Ideas', 'Job Search', 'Other'];
 
   constructor(
     private fb: FormBuilder,
@@ -89,7 +97,8 @@ export class TaskFormComponent implements OnInit {
           description: clone.description,
           status: clone.status,
           dueDate: new Date(clone.dueDate),
-          priority: clone.priority
+          priority: clone.priority,
+          category: clone.category || ''
         });
         this.checkAndDisableDueDate();
       }
@@ -102,7 +111,8 @@ export class TaskFormComponent implements OnInit {
       description: ['', [Validators.maxLength(400)]],
       status: [TaskStatus.TODO, Validators.required],
       dueDate: [new Date(), Validators.required],
-      priority: ['MEDIUM', Validators.required]
+      priority: ['MEDIUM', Validators.required],
+      category: ['']
     });
   }
 
@@ -115,7 +125,8 @@ export class TaskFormComponent implements OnInit {
           description: task.description,
           status: task.status,
           dueDate: new Date(task.dueDate),
-          priority: task.priority
+          priority: task.priority,
+          category: task.category || ''
         });
         this.checkAndDisableDueDate();
         this.isFetching = false;
