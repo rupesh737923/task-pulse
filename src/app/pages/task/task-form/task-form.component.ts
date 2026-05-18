@@ -61,6 +61,7 @@ export class TaskFormComponent implements OnInit {
   isEditMode = false;
   isSubmitted = false;
   isLoading = false;
+  isFetching = false;
   errorMessage = '';
   minDate = new Date();
 
@@ -106,7 +107,7 @@ export class TaskFormComponent implements OnInit {
   }
 
   private loadTask(): void {
-    this.isLoading = true;
+    this.isFetching = true;
     this.taskService.getTask(this.taskId!).subscribe({
       next: (task: Task) => {
         this.taskForm.patchValue({
@@ -117,12 +118,12 @@ export class TaskFormComponent implements OnInit {
           priority: task.priority
         });
         this.checkAndDisableDueDate();
-        this.isLoading = false;
+        this.isFetching = false;
       },
       error: (err) => {
         console.error('Error loading task:', err);
         this.errorMessage = 'Failed to load task details';
-        this.isLoading = false;
+        this.isFetching = false;
       }
     });
   }

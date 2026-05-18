@@ -21,7 +21,7 @@
     <div class="v2-action-group notes-action-group">
       <mat-form-field appearance="outline" class="v2-category-select sort-select">
         <mat-label>Sort By</mat-label>
-        <mat-select [(ngModel)]="sortOption" (selectionChange)="search()">
+        <mat-select [(ngModel)]="sortOption" (selectionChange)="onSortChange()">
           <mat-option value="createdAt_desc">Newest First</mat-option>
           <mat-option value="createdAt_asc">Oldest First</mat-option>
           <mat-option value="updatedAt_desc">Recently Updated</mat-option>
@@ -32,8 +32,7 @@
 
       <mat-form-field appearance="outline" class="v2-category-select category-select">
         <mat-label>Category</mat-label>
-        <mat-select [(ngModel)]="category" (selectionChange)="search()">
-          <mat-option value="">All</mat-option>
+        <mat-select [(ngModel)]="selectedCategories" (selectionChange)="onCategoryChange()" multiple>
           <mat-option *ngFor="let cat of categories" [value]="cat">{{ cat }}</mat-option>
         </mat-select>
       </mat-form-field>
@@ -46,45 +45,54 @@
   </div>
 
   <div class="v2-section">
-    <div class="v2-list" *ngIf="notes.length > 0; else emptyState">
-      <div class="v2-item" *ngFor="let note of notes" [class.pinned-item]="note.isPinned">
-        <div class="v2-item-icon" (click)="togglePin(note)" matTooltip="Toggle Pin">
-          <span class="material-icons" [style.color]="note.isPinned ? '#f59e0b' : '#9ca3af'">
-            {{ note.isPinned ? 'push_pin' : 'push_pin' }}
-          </span>
-        </div>
-        
-        <div class="v2-item-content">
-          <h4 class="v2-item-title">{{ note.title }}</h4>
-          <p class="v2-item-subtitle note-snippet">{{ note.content }}</p>
-        </div>
-
-        <div class="v2-item-hover-actions" (click)="editNote(note.id)">
-           <span class="material-icons hover-edit-icon" matTooltip="Edit Note">edit</span>
-        </div>
-
-        <div class="v2-item-meta-right hide-mobile">
-          <span class="v2-status-text">{{ note.updatedAt | date:'MMM d, y' }}</span>
-          <span *ngIf="note.category" class="v2-tag list-tag" [ngClass]="note.category.toLowerCase()">
-            {{ note.category }}
-          </span>
-        </div>
-
-        <div class="v2-item-actions">
-           <button mat-icon-button [matMenuTriggerFor]="menu" [matMenuTriggerData]="{ note: note }" (click)="$event.stopPropagation()">
-             <span class="material-icons">more_vert</span>
-           </button>
-        </div>
-      </div>
+    <!-- Loading State -->
+    <div class="loading-state" *ngIf="loading" style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 4rem 0;">
+      <div class="spinner"></div>
+      <p style="margin-top: 1rem; color: var(--content-text-muted); font-size: 0.95rem; font-weight: 500;">Loading your notes...</p>
     </div>
 
-    <ng-template #emptyState>
-      <div class="v2-empty-results" style="margin-top: 2rem;">
-        <span class="material-icons" style="font-size: 48px; color: #9ca3af; margin-bottom: 1rem;">note_alt</span>
-        <p>No notes found. Try adjusting your search or create a new note.</p>
-        <button mat-raised-button color="primary" (click)="createNote()" style="margin-top: 1rem;">Create your first note</button>
+    <!-- Actual List / Empty State -->
+    <div *ngIf="!loading">
+      <div class="v2-list" *ngIf="notes.length > 0; else emptyState">
+        <div class="v2-item" *ngFor="let note of notes" [class.pinned-item]="note.isPinned">
+          <div class="v2-item-icon" (click)="togglePin(note)" matTooltip="Toggle Pin">
+            <span class="material-icons" [style.color]="note.isPinned ? '#f59e0b' : '#9ca3af'">
+              {{ note.isPinned ? 'push_pin' : 'push_pin' }}
+            </span>
+          </div>
+          
+          <div class="v2-item-content">
+            <h4 class="v2-item-title">{{ note.title }}</h4>
+            <p class="v2-item-subtitle note-snippet">{{ note.content }}</p>
+          </div>
+
+          <div class="v2-item-hover-actions" (click)="editNote(note.id)">
+             <span class="material-icons hover-edit-icon" matTooltip="Edit Note">edit</span>
+          </div>
+
+          <div class="v2-item-meta-right hide-mobile">
+            <span class="v2-status-text">{{ note.updatedAt | date:'MMM d, y' }}</span>
+            <span *ngIf="note.category" class="v2-tag list-tag" [ngClass]="note.category.toLowerCase()">
+              {{ note.category }}
+            </span>
+          </div>
+
+          <div class="v2-item-actions">
+             <button mat-icon-button [matMenuTriggerFor]="menu" [matMenuTriggerData]="{ note: note }" (click)="$event.stopPropagation()">
+               <span class="material-icons">more_vert</span>
+             </button>
+          </div>
+        </div>
       </div>
-    </ng-template>
+
+      <ng-template #emptyState>
+        <div class="v2-empty-results" style="margin-top: 2rem;">
+          <span class="material-icons" style="font-size: 48px; color: #9ca3af; margin-bottom: 1rem;">note_alt</span>
+          <p>No notes found. Try adjusting your search or create a new note.</p>
+          <button mat-raised-button color="primary" (click)="createNote()" style="margin-top: 1rem;">Create your first note</button>
+        </div>
+      </ng-template>
+    </div>
   </div>
 
   <div class="paginator-container" *ngIf="totalNotes > 0">

@@ -42,26 +42,58 @@ export class NotesListComponent implements OnInit {
   keyword = '';
   category = '';
   sortOption = 'createdAt_desc';
-  
-  categories: string[] = ['Work', 'Personal', 'School', 'Health', 'Finance', 'Ideas', 'Other'];
+  loading = false;
+
+  selectedCategories: string[] = [];
+  categories: string[] = ['All', 'Work', 'Personal', 'School', 'Health', 'Finance', 'Ideas', 'Job Search', 'Other'];
 
   constructor(
     private notesService: NotesService,
     private router: Router
-  ) {}
+  ) { }
 
   ngOnInit(): void {
+    const savedSort = localStorage.getItem('taskpulse_notes_sort');
+    if (savedSort) {
+      this.sortOption = savedSort;
+    }
+
+    const savedCategoriesStr = localStorage.getItem('taskpulse_notes_categories');
+    const actualCategories = ['Work', 'Personal', 'School', 'Health', 'Finance', 'Ideas', 'Job Search', 'Other'];
+
+    if (savedCategoriesStr !== null) {
+      this.category = savedCategoriesStr;
+      if (savedCategoriesStr === '') {
+        this.selectedCategories = ['All', ...actualCategories];
+      } else if (savedCategoriesStr === '__none__') {
+        this.selectedCategories = [];
+      } else {
+        this.selectedCategories = savedCategoriesStr.split(',').filter(Boolean);
+        if (this.selectedCategories.length === actualCategories.length) {
+          this.selectedCategories = ['All', ...actualCategories];
+        }
+      }
+    } else {
+      this.selectedCategories = ['All', ...actualCategories];
+      this.category = '';
+    }
+
     this.loadNotes();
   }
 
   loadNotes(): void {
+    this.loading = true;
     const [sortBy, sortOrder] = this.sortOption.split('_');
     this.notesService.getNotes(this.currentPage, this.pageSize, this.category, this.keyword, sortBy, sortOrder).subscribe({
       next: (response) => {
         this.notes = response.items;
         this.totalNotes = response.total;
+        this.loading = false;
       },
-      error: (err) => console.error('Error loading notes', err)
+      error: (err) => {
+        console.error('Error loading notes', err);
+        this.loading = false;
+      }
     });
   }
 
@@ -72,6 +104,54 @@ export class NotesListComponent implements OnInit {
   }
 
   search(): void {
+    this.currentPage = 1;
+    this.loadNotes();
+  }
+
+  onSortChange(): void {
+    localStorage.setItem('taskpulse_notes_sort', this.sortOption);
+    this.currentPage = 1;
+    this.loadNotes();
+  }
+
+  onCategoryChange(): void {
+    const actualCategories = ['Work', 'Personal', 'School', 'Health', 'Finance', 'Ideas', 'Job Search', 'Other'];
+    let selected = [...this.selectedCategories];
+
+    // Check if 'All' was just checked or unchecked
+    const wasAllSelectedBefore = this.category === '' || (this.category.split(',').length === actualCategories.length);
+    const isAllCheckedNow = selected.includes('All');
+
+    if (isAllCheckedNow && !wasAllSelectedBefore) {
+      // User just checked 'All' -> Select all categories
+      selected = ['All', ...actualCategories];
+    } else if (!isAllCheckedNow && wasAllSelectedBefore) {
+      // User just unchecked 'All' -> Deselect everything
+      selected = [];
+    } else {
+      // User checked/unchecked individual items
+      const actualSelected = selected.filter(c => c !== 'All');
+      if (actualSelected.length === actualCategories.length) {
+        // If all individuals are selected, check 'All' too
+        selected = ['All', ...actualCategories];
+      } else {
+        // Otherwise, keep only individuals
+        selected = actualSelected;
+      }
+    }
+
+    this.selectedCategories = selected;
+
+    const actualSelected = this.selectedCategories.filter(c => c !== 'All');
+    if (this.selectedCategories.includes('All') || actualSelected.length === actualCategories.length) {
+      this.category = '';
+    } else if (actualSelected.length === 0) {
+      this.category = '__none__';
+    } else {
+      this.category = actualSelected.join(',');
+    }
+
+    localStorage.setItem('taskpulse_notes_categories', this.category);
     this.currentPage = 1;
     this.loadNotes();
   }

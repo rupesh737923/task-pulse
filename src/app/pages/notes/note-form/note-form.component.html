@@ -8,7 +8,13 @@
 
   <mat-card class="form-card elevation-z3">
     <mat-card-content>
-      <form [formGroup]="noteForm" (ngSubmit)="onSubmit()" class="note-form">
+      <!-- Loading State -->
+      <div class="form-loading" *ngIf="isLoading" style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 6rem 0;">
+        <div class="spinner"></div>
+        <p style="margin-top: 1rem; color: var(--content-text-muted); font-size: 0.95rem; font-weight: 500;">Loading note details...</p>
+      </div>
+
+      <form [formGroup]="noteForm" (ngSubmit)="onSubmit()" class="note-form" *ngIf="!isLoading">
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Title</mat-label>
           <input matInput formControlName="title" placeholder="Give your note a title...">

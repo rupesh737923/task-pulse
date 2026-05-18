@@ -155,7 +155,56 @@
         <a routerLink="/login" class="btn-login">Login</a>
         <a routerLink="/sign-up" class="btn-signup">Sign Up</a>
       </div>
+      
+      <!-- Mobile Burger for Guests -->
+      <button class="guest-hamburger" (click)="toggleGuestMobileMenu()">
+        <span class="material-icons">{{ isGuestMobileMenuOpen ? 'close' : 'menu' }}</span>
+      </button>
     </header>
+
+    <!-- Guest Mobile Backdrop -->
+    <div class="guest-mobile-backdrop" *ngIf="isGuestMobileMenuOpen && !(authService.currentUser$ | async)" (click)="toggleGuestMobileMenu()"></div>
+
+    <!-- Guest Mobile Menu Overlay (Sidebar Drawer) -->
+    <div class="guest-mobile-menu" [class.open]="isGuestMobileMenuOpen" *ngIf="!(authService.currentUser$ | async)">
+      <div class="guest-mobile-menu-header">
+        <div class="nav-brand">
+          <img [src]="logoUrl" alt="Logo" class="brand-logo" />
+          <span class="brand-text">Task Pulse</span>
+        </div>
+        <button class="guest-mobile-close-btn" (click)="toggleGuestMobileMenu()">
+          <span class="material-icons">close</span>
+        </button>
+      </div>
+
+      <div class="guest-mobile-menu-content">
+        <a routerLink="/login" (click)="isGuestMobileMenuOpen = false" class="guest-mobile-item">
+          <span class="material-icons">login</span>
+          <span>Login</span>
+        </a>
+        <a routerLink="/sign-up" (click)="isGuestMobileMenuOpen = false" class="guest-mobile-item signup-mobile-btn">
+          <span class="material-icons">person_add</span>
+          <span>Sign Up</span>
+        </a>
+        <div class="guest-mobile-divider"></div>
+        <div class="guest-mobile-section-title">Utilities</div>
+        <a routerLink="/convert" (click)="isGuestMobileMenuOpen = false" class="guest-mobile-item">
+          <span class="material-icons">transform</span>
+          <span>Convert Document</span>
+        </a>
+        <a routerLink="/utilities/video-to-mp3" (click)="isGuestMobileMenuOpen = false" class="guest-mobile-item">
+          <span class="material-icons">audiotrack</span>
+          <span>Video to MP3</span>
+        </a>
+        <div class="guest-mobile-divider"></div>
+        <button class="guest-mobile-theme-toggle" (click)="themeService.toggleTheme()">
+          <span class="material-icons" style="color: var(--sidebar-item-color); opacity: 0.85;">
+            {{ (themeService.theme$ | async) === 'dark' ? 'light_mode' : 'dark_mode' }}
+          </span>
+          <span>{{ (themeService.theme$ | async) === 'dark' ? 'Light Mode' : 'Dark Mode' }}</span>
+        </button>
+      </div>
+    </div>
 
     <!-- Mobile Header (Visible only on mobile when logged in) -->
     <header class="mobile-header" *ngIf="authService.currentUser$ | async">

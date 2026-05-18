@@ -60,6 +60,7 @@ export class AppComponent {
   }
 
   isMobileMenuOpen = false;
+  isGuestMobileMenuOpen = false;
   isMyListsCollapsed = false;
 
   toggleMyLists(): void {
@@ -70,6 +71,10 @@ export class AppComponent {
 
   toggleMobileMenu(): void {
     this.isMobileMenuOpen = !this.isMobileMenuOpen;
+  }
+
+  toggleGuestMobileMenu(): void {
+    this.isGuestMobileMenuOpen = !this.isGuestMobileMenuOpen;
   }
 
   toggleUtilityMenu(event?: Event): void {
@@ -89,6 +94,9 @@ export class AppComponent {
   closeMobileMenu(): void {
     if (this.isMobileMenuOpen) {
       this.isMobileMenuOpen = false;
+    }
+    if (this.isGuestMobileMenuOpen) {
+      this.isGuestMobileMenuOpen = false;
     }
   }
 }
